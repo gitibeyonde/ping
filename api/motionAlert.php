@@ -22,16 +22,27 @@ set_time_limit(20);
 $bucket='data.ibeyonde';
 
 function outputRequest(){
-     error_log(file_get_contents( 'php://input' ));
-     error_log(print_r(apache_request_headers(), true));
-     error_log(print_r($_SERVER, true));
-     error_log(print_r($_POST, true));
-     error_log(print_r($_GET, true));
-     error_log(print_r($_FILES, true));
+     error_log("FILE CONTENT ".file_get_contents( 'php://input' ));
+     error_log("HEADER ".print_r(apache_request_headers(), true));
+     error_log("SERVER ".print_r($_SERVER, true));
+     error_log("POST ".print_r($_POST, true));
+     error_log("GET ".print_r($_GET, true));
+     error_log("FILEs ".print_r($_FILES, true));
 }
 
-if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(basename($_FILES["fileToUpload"]["name"])) > 0){
-    $token=urldecode($_POST["t"]);
+//outputRequest();
+
+if (isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(basename($_FILES["fileToUpload"]["name"])) > 0){
+    if (isset($_POST["t"])){
+        $token=urldecode($_POST["t"]);
+    }
+    else if (isset($_SERVER["HTTP_TOKEN"])){
+        $token=$_SERVER["HTTP_TOKEN"];
+    }
+    else {
+        echo json_encode(array('errno' => 'param_102', 'msg' => 'Token error'));
+        die;
+    }
     $uuid=urldecode($_GET["hn"]);
     $timezone=urldecode($_GET["tz"]);
     $type=$_GET["tp"];
@@ -39,15 +50,15 @@ if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(bas
     if (isset($_GET["grid"])){
         $grid=$_GET["grid"];
     }
-  
-    $utils = new Utils(); 
+
+    $utils = new Utils();
     $tok_code=$utils->checkToken($token, $uuid);
     if ( $tok_code != 0){//check token
         echo json_encode(array('errno' => 'token_'.$tok_code, 'msg' => 'Bad token'));
         error_log($uuid. ' Bad token ' . $tok_code . ' bad token is '.$token);
         die();
     }
-    
+
 
     $s3client = S3Client::factory(array(
                     'version' => S3_VERSION,
@@ -55,7 +66,7 @@ if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(bas
                     'secret' => S3_SECRET,
                     'region' => S3_REGION
     ));
-    
+
     if ($_FILES["fileToUpload"]["error"] != 0){
         echo json_encode(array('errno' => 'file_105', 'msg' => 'File upload failed error='.print_r($_FILES["fileToUpload"]["error"], TRUE)));
         error_log($uuid.' File upload failed for '.$_FILES["fileToUpload"]["name"] . ' with error ' . $_FILES["fileToUpload"]["error"] . ' size is ' . $_FILES["fileToUpload"]["size"]);
@@ -68,13 +79,13 @@ if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(bas
         error_log($uuid.' - bad format for '.$_FILES["fileToUpload"]["name"] . ' with error ' .$_FILES["fileToUpload"]["type"]);
         die();
     }
-    
+
     if ($_FILES["fileToUpload"]["size"] > 100000000) {
         echo json_encode(array('errno' => 'file_102', 'msg' => 'File is too LARGE'));
         error_log($uuid. 'File is too large for '.$_FILES["fileToUpload"]["name"] . ' with error ' . $_FILES["fileToUpload"]["size"]);
         die();
     }
-    
+
     $motion = new MotionFile(basename($_FILES["fileToUpload"]["name"]));
     $target_file="";
 
@@ -86,7 +97,7 @@ if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(bas
     }
 
     try {
-        $upload = $s3client->upload($bucket, $target_file, fopen($_FILES['fileToUpload']['tmp_name'], 'rb'), 
+        $upload = $s3client->upload($bucket, $target_file, fopen($_FILES['fileToUpload']['tmp_name'], 'rb'),
                 'private', array('params' => array('ContentType' => 'image/jpeg')));
         if ($upload) {
             $timestamp = time();
@@ -121,6 +132,7 @@ else {
     echo json_encode(array('errno' => 'param_101', 'msg' => 'Param error'));
     outputRequest();
 }
-         
+
 ?>
+
 

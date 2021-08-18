@@ -5,7 +5,9 @@
     require_once(__ROOT__.'/classes/Utils.php');
     require_once(__ROOT__.'/libraries/password_compatibility_library.php');
 
-    if (isset($_GET['uuid'])){
+    error_log(print_r($_POST, true));
+
+    if (isset($_GET['uuid']) && isset($_POST['u']) && isset($_POST['p'])){
         $uuid = $_GET['uuid'];
         $timezone = urldecode($_GET['tz']);
         $user = urldecode($_POST['u']);
@@ -26,7 +28,7 @@
                 $utils = new Utils();
                 
                 if ( !$utils->autheticate($user, $pass)){
-                    echo json_encode(array('errno' => 'sql_403', 'msg' => 'Bad password'));
+                    echo json_encode(array('errno' => 'sql_403', 'msg' => 'Bad user/password'));
                 }
                 else {
                     $db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
