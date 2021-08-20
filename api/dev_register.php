@@ -24,9 +24,9 @@
         else {
             try {
                 $utils = new Utils();
-                
+
                 if ( !$utils->autheticate($user, $pass)){
-                    echo json_encode(array('errno' => 'sql_403', 'msg' => 'Bad password'));
+                    echo json_encode(array('errno' => 'sql_403', 'msg' => 'Bad user/password'));
                 }
                 else {
                     $db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
