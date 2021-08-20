@@ -5,7 +5,9 @@
     require_once(__ROOT__.'/classes/Utils.php');
     require_once(__ROOT__.'/libraries/password_compatibility_library.php');
 
-    if (isset($_GET['uuid'])){
+    error_log(print_r($_POST, true));
+
+    if (isset($_GET['uuid']) && isset($_POST['u']) && isset($_POST['p'])){
         $uuid = $_GET['uuid'];
         $timezone = urldecode($_GET['tz']);
         $user = urldecode($_POST['u']);

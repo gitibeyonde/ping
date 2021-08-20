@@ -30,7 +30,7 @@ function outputRequest(){
      error_log("FILEs ".print_r($_FILES, true));
 }
 
-outputRequest();
+//outputRequest();
 
 if (isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(basename($_FILES["fileToUpload"]["name"])) > 0){
     if (isset($_POST["t"])){
@@ -134,4 +134,5 @@ else {
 }
 
 ?>
+
 
