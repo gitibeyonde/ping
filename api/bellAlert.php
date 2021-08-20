@@ -27,9 +27,10 @@ if (isset($_GET["hn"])){
         die();
     }
 
-$ar = new AlertRaised();
+    $ar = new AlertRaised();
+    $ar->notifyBellRing($uuid, new DateTime('now'));
 
-$ar->notifyBellRing($uuid, new DateTime('now'));
+    echo json_encode(array('success' => '0'));
 }
 else {
     echo json_encode(array('errno' => 'param_101', 'msg' => 'Param error'));
