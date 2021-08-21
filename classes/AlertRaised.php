@@ -302,13 +302,16 @@ class AlertRaised
 
 
     public function notifyBellRing($uuid, $datetime){
+        $ac = AlertConfig::loadDeviceAlertConfig($uuid);
+        if ($ac == null) return;
         // ALERTS
-        $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", "", $output['name']."-".$output['conf'], $datetime);
+        $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", "", "", $datetime);
         if ($ac->checkEmailEnabled(AlertRaised::BELL_PRESS)){
-            $this->em->sendEmailAlert($id, $ac->email, "Bell Pressed ". $output['name'], $output['name'] . ' <img src="'.$this->aws->getSignedFileUrl($target_file) .'"/> on device '.Device::getDeviceName($uuid).' at '. $timestamp_str .' </br> </br>For more info goto https://app.ibeyonde.com ');
+            $this->em->sendEmailAlert($id, $ac->email, "Bell Pressed ", " Bell button pressed at ".$datetime);//$id, $destination, $subject, $body
         }
         if ($ac->checkPnsEnabled(AlertRaised::BELL_PRESS)){
-            $this->sns->publishToEndpoint($id, $uuid, AlertRaised::FACE_RECOGNIZED, $this->aws->getSignedFileUrl($target_file), 0, $output['name'], $timestamp_str);
+            //$id, $uuid, $alert_type, $image, $value, $comment, $timestamp
+            $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
         }
     }
 
