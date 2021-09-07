@@ -16,7 +16,7 @@ class AwsSns {
                     'region' => S3_REGION
             );
     
-    private static $app_arn = "arn:aws:sns:us-west-2:574451441288:app/GCM/ibeyonde";
+    private static $app_arn = "arn:aws:sns:us-west-2:574451441288:app/GCM/CleverCam";
     
     public function __construct() {
         if (self::$sns == null) {
