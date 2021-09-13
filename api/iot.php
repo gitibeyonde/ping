@@ -135,7 +135,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
                         
-                        
                         if (isset($_GET['type'])) {
                             $type=$_GET['type'];
                             
@@ -182,6 +181,10 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 case 'history':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
+			$count=20;
+			if(isset($_GET['cnt'])){
+                            $count=$_GET['cnt']; 
+			}
                         $client = new Aws ();
                         $dev = new Device();
                         $device = $dev->loadDevice ( $uuid );
@@ -204,11 +207,10 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             $motions = $client->loadMotionData ( $uuid, $date );
                         }
                         $history = array();
-                        $i=0;
                         foreach ( $motions as $motion ) {
                             $furl = $client->getSignedFileUrl ( $motion->image );
                             $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
-                            if ($i++ > 50)break;
+			    if (--$count <= 0)break;
                         }
                         error_log("H Size=".count($history));
                         echo json_encode($history);
