@@ -28,7 +28,7 @@ if (isset($_GET["hn"])){
     }
 
     $ar = new AlertRaised();
-    $ar->notifyBellRing($uuid, date(DateTime::ATOM));
+    $ar->notifyBellRing($uuid, date('Y/m/d H:i:s'));
 
     echo json_encode(array('success' => '0'));
 }
