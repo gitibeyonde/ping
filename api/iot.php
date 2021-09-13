@@ -204,10 +204,13 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             $motions = $client->loadMotionData ( $uuid, $date );
                         }
                         $history = array();
+                        $i=0;
                         foreach ( $motions as $motion ) {
                             $furl = $client->getSignedFileUrl ( $motion->image );
                             $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
+                            if ($i++ > 50)break;
                         }
+                        error_log("H Size=".count($history));
                         echo json_encode($history);
                     }
                     break;

@@ -191,7 +191,7 @@ class AlertRaised
     public function addAlert($uuid, $alert_type, $image, $value, $comment, $datetime)
     {
         if ($this->databaseConnection()) {
-            //error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". date_format($datetime, DateTime::ATOM));
+            error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". date_format($datetime, DateTime::ATOM));
             // database query, getting all the info of the selected user
             $query_device = $this->db_connection->prepare('insert into alert_raised(type, uuid, image, value, comment, created)  values(:alert_type, :uuid, :image, :value, :comment, :timestamp)');
             $query_device->bindValue(':alert_type', $alert_type, PDO::PARAM_STR);
@@ -201,9 +201,9 @@ class AlertRaised
             $query_device->bindValue(':comment', $comment, PDO::PARAM_STR);
             $query_device->bindValue(':timestamp', date_format($datetime, DateTime::ATOM), PDO::PARAM_STR);
             $query_device->execute();
-            //error_log("Last insert id ".$this->db_connection->lastInsertId());
+            error_log("Last insert id ".$this->db_connection->lastInsertId());
             return $this->db_connection->lastInsertId();
-            //error_log("Error=".implode(",", $query_device->errorInfo()));
+            error_log("Error=".implode(",", $query_device->errorInfo()));
         }
         return 1;
     }
@@ -302,17 +302,10 @@ class AlertRaised
 
 
     public function notifyBellRing($uuid, $datetime){
-        $ac = AlertConfig::loadDeviceAlertConfig($uuid);
-        if ($ac == null) return;
         // ALERTS
         $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", "", "", $datetime);
-        if ($ac->checkEmailEnabled(AlertRaised::BELL_PRESS)){
-            $this->em->sendEmailAlert($id, $ac->email, "Bell Pressed ", " Bell button pressed at ".$datetime);//$id, $destination, $subject, $body
-        }
-        if ($ac->checkPnsEnabled(AlertRaised::BELL_PRESS)){
             //$id, $uuid, $alert_type, $image, $value, $comment, $timestamp
-            $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
-        }
+        $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
     }
 
     public function notifyMotion($uuid, $type, $target_file, $grid, $datetime){

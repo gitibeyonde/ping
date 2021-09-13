@@ -93,15 +93,15 @@ class AwsSns {
                     ))
                 ));
             }
-            //error_log("publishToEndpoint".$json_message);
+            error_log("publishToEndpoint".$json_message);
             try {
-                //error_log("Endpoint arn = ".  $endpoint->endpoint_arn);
+                error_log("Endpoint arn = ".  $endpoint->endpoint_arn);
                 $result = AwsSns::$sns->publish([
                     'Message' => $json_message, 
                     'MessageStructure' => 'json',
                     'TargetArn' => $endpoint->endpoint_arn,
                 ]);
-                //error_log("publishToEndpoint".$result['MessageId']);
+                error_log("publishToEndpoint".$result['MessageId']);
             }
             catch (Aws\Sns\Exception\SnsException $e){
                 if (strpos('EndpointDisabled', $e->getMessage())){
