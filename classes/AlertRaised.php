@@ -191,7 +191,7 @@ class AlertRaised
     public function addAlert($uuid, $alert_type, $image, $value, $comment, $datetime)
     {
         if ($this->databaseConnection()) {
-            error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". date_format($datetime, DateTime::ATOM));
+            error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". $datetime);
             // database query, getting all the info of the selected user
             $query_device = $this->db_connection->prepare('insert into alert_raised(type, uuid, image, value, comment, created)  values(:alert_type, :uuid, :image, :value, :comment, :timestamp)');
             $query_device->bindValue(':alert_type', $alert_type, PDO::PARAM_STR);
@@ -199,11 +199,11 @@ class AlertRaised
             $query_device->bindValue(':image', $image, PDO::PARAM_STR);
             $query_device->bindValue(':value', $value, PDO::PARAM_STR);
             $query_device->bindValue(':comment', $comment, PDO::PARAM_STR);
-            $query_device->bindValue(':timestamp', date_format($datetime, DateTime::ATOM), PDO::PARAM_STR);
+            $query_device->bindValue(':timestamp', $datetime, PDO::PARAM_STR);
             $query_device->execute();
             error_log("Last insert id ".$this->db_connection->lastInsertId());
-            return $this->db_connection->lastInsertId();
             error_log("Error=".implode(",", $query_device->errorInfo()));
+            return $this->db_connection->lastInsertId();
         }
         return 1;
     }
@@ -303,8 +303,7 @@ class AlertRaised
 
     public function notifyBellRing($uuid, $datetime){
         // ALERTS
-        $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", "", "", $datetime);
-            //$id, $uuid, $alert_type, $image, $value, $comment, $timestamp
+        $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
         $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
     }
 

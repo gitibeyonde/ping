@@ -46,12 +46,11 @@ class AwsSns {
     //{"GCM":"{\"data\":{\"id\":\"30525\",\"title\":\"High Temperature of 36 Deg C detected on LakeView\",\"uuid\":\"3729a83d\",
     //\"name\":\"LakeView\",\"image\":\"\",\"value\":\"36\",\"comment\":\"Deg C\",\"created\":\"2018-07-23 13:24:52 Asia\\\/Calcutta\"}}”}
     public function publishToEndpoint($id, $uuid, $alert_type, $image, $value, $comment, $timestamp){
-	    return null;
         $dt = new DeviceToken();
         $endpoint_arns = $dt->loadDeviceTokensForDevice($uuid);
        
        
-        //error_log("End point ARNS".print_r($endpoint_arns, true));
+        error_log("End point ARNS".print_r($endpoint_arns, true));
         foreach ($endpoint_arns as &$endpoint) {
             $json_message=null;
             if ($endpoint->system == 'iOS') {
