@@ -99,6 +99,9 @@ class AlertRaised
         else if ($alert == AlertRaised::LICENSE){
             return Device::getDeviceName($uuid) . " is offline for ".$value." minutes";
         }
+        else if ($alert == AlertRaised::BELL_PRESS){
+            return "Bell button pressed on " . Device::getDeviceName($uuid);
+        }
         else {
             return $alert;
         }
@@ -191,7 +194,7 @@ class AlertRaised
     public function addAlert($uuid, $alert_type, $image, $value, $comment, $datetime)
     {
         if ($this->databaseConnection()) {
-            error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". $datetime);
+            error_log("addAlert   ".$uuid.", ". $alert_type.", ". $image.", ". $value. ", ".$comment.", ". $datetime->format($this::DATE_FORMAT));
             // database query, getting all the info of the selected user
             $query_device = $this->db_connection->prepare('insert into alert_raised(type, uuid, image, value, comment, created)  values(:alert_type, :uuid, :image, :value, :comment, :timestamp)');
             $query_device->bindValue(':alert_type', $alert_type, PDO::PARAM_STR);
@@ -199,7 +202,7 @@ class AlertRaised
             $query_device->bindValue(':image', $image, PDO::PARAM_STR);
             $query_device->bindValue(':value', $value, PDO::PARAM_STR);
             $query_device->bindValue(':comment', $comment, PDO::PARAM_STR);
-            $query_device->bindValue(':timestamp', $datetime, PDO::PARAM_STR);
+            $query_device->bindValue(':timestamp', $datetime->format($this::DATE_FORMAT), PDO::PARAM_STR);
             $query_device->execute();
             error_log("Last insert id ".$this->db_connection->lastInsertId());
             error_log("Error=".implode(",", $query_device->errorInfo()));
@@ -302,9 +305,17 @@ class AlertRaised
 
 
     public function notifyBellRing($uuid, $datetime){
+        $utils = new Utils();
+        $file = $utils->getLastAlert($uuid);
+	$furl = "";
+        if ($file != null){
+           $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, $file, 0, "", $datetime);
+           $motion = new Motion($file);
+           $client = new Aws ();
+           $furl = $client->getSignedFileUrl($motion->image );
+        }
         // ALERTS
-        $id = $this->addAlert($uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
-        $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, "", 0, "", $datetime);
+        $this->sns->publishToEndpoint($id, $uuid, AlertRaised::BELL_PRESS, $furl, 0, "", $datetime->format($this::DATE_FORMAT));
     }
 
     public function notifyMotion($uuid, $type, $target_file, $grid, $datetime){

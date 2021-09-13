@@ -45,7 +45,7 @@ class AwsSns {
     
     //{"GCM":"{\"data\":{\"id\":\"30525\",\"title\":\"High Temperature of 36 Deg C detected on LakeView\",\"uuid\":\"3729a83d\",
     //\"name\":\"LakeView\",\"image\":\"\",\"value\":\"36\",\"comment\":\"Deg C\",\"created\":\"2018-07-23 13:24:52 Asia\\\/Calcutta\"}}”}
-    public function publishToEndpoint($id, $uuid, $alert_type, $image, $value, $comment, $timestamp){
+    public function publishToEndpoint($id, $uuid, $alert_type, $image, $value, $comment, $timestamp_str){
         $dt = new DeviceToken();
         $endpoint_arns = $dt->loadDeviceTokensForDevice($uuid);
        
@@ -58,7 +58,7 @@ class AwsSns {
                     'GCM' => json_encode(array(
                         'notification' => array(
                             'title' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
-                            'body' => $timestamp,
+                            'body' => $timestamp_str,
                             'type' => $alert_type,
                         ),
                         'data' => array(
@@ -70,7 +70,7 @@ class AwsSns {
                             'image' => $image,
                             'value' => $value,
                             'comment' => $comment,
-                            'created' => $timestamp,
+                            'created' => $timestamp_str,
                         ),
                     ))
                 ));
@@ -87,7 +87,7 @@ class AwsSns {
                             'image' => $image,
                             'value' => $value,
                             'comment' => $comment,
-                            'created' => $timestamp,
+                            'created' => $timestamp_str,
                         ),
                     ))
                 ));
