@@ -117,7 +117,7 @@ class AlertRaised
        }
        $aws = new Aws();
        foreach($alerts as $alert){
-           $alert->image = $aws->getFileUrl($alert->image);
+           $alert->image = $aws->getSignedFileUrl($alert->image);
        }
        return $alerts;
 
