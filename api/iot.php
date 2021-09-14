@@ -192,7 +192,17 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         }
                     }
                     else {
-                        echo json_encode(array('code' => 433, 'message' => 'Device uuid not set'));
+                        if (isset($_GET['type'])) {
+                            $type=$_GET['type'];
+                            if ($type == 'bp') {
+                                $ar = new AlertRaised();
+                                $alert_array=$ar->loadDeviceAlertsforUser($user_name);
+                                echo json_encode($alert_array);
+                            }
+                        }
+                        else {
+                            echo json_encode(array('code' => 432, 'message' => 'No alerts found'));
+                        }
                     }
                     break;
                 case 'history':
