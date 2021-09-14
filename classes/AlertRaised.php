@@ -111,7 +111,7 @@ class AlertRaised
     public function loadDeviceAlertsforUser($user_name)
     {
        $alerts = array();
-       $devices = new Device();
+       $devices = Device::loadUserDevices($user_name);
        foreach($devices as $device) {
            $alerts = array_merge($alerts, $this->loadAllDeviceAlerts($device->uuid));
        }
