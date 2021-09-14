@@ -186,7 +186,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             else {
                                 $motion_array = array();
                                 foreach (array_reverse($ivs) as $iv) {
-                                    if ($count <= 0)
+                                    if ($count <= 0)break;
                                     $motion_array[] = $iv;
                                     $count--;
                                 }
