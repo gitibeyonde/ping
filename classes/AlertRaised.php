@@ -115,7 +115,12 @@ class AlertRaised
        foreach($devices as $device) {
            $alerts = array_merge($alerts, $this->loadAllDeviceAlerts($device->uuid));
        }
+       $aws = new Aws();
+       foreach($alerts as $alert){
+           $alert->image = $aws->getFileUrl($alert->image);
+       }
        return $alerts;
+
     }
     public function loadDeviceAlerts($uuid)
     {
@@ -173,7 +178,7 @@ class AlertRaised
         try {
             if ($this->databaseConnection()) {
                 // database query, getting all the info of the selected user
-                $query_user = $this->db_connection->prepare('SELECT * FROM alert_raised WHERE uuid = :uuid order by created desc limit 50');
+                $query_user = $this->db_connection->prepare('SELECT * FROM alert_raised WHERE uuid = :uuid order by created desc limit 10');
                 $query_user->bindValue(':uuid', $uuid, PDO::PARAM_STR);
                 $query_user->setFetchMode(PDO::FETCH_CLASS, 'AlertRaised');
                 $query_user->execute();
