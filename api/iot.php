@@ -95,21 +95,28 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         if (isset($_GET['type'])) {
                             $type=$_GET['type'];
                             
-                            $ar = new AlertRaised();
                             if ($type == 'fd'){
+                                $face = new Face();
                                 // return face detected
                                 $fo = $face->getFaces($user_name, AlertRaised::FACE_DETECTED, 1);
                                 error_log("Last face detected $fo");
                             }
                             else if ($type == 'fr') {
+                                $face = new Face();
                                 // return face recognized
                                 $fo = $face->getFaces($user_name, AlertRaised::FACE_RECOGNIZED, 1);
                                 error_log("Last face recognized $fo");
                             }
                             else if ($type == 'gd') {
+                                $face = new Face();
                                 // return face recognized
                                 $fo = $face->getFaces($user_name, AlertRaised::GRID_DETECTED, 1);
                                 error_log("Last grid detected $fo");
+                            }
+                            else if ($type == 'bp') {
+                                $ar = new AlertRaised();
+                                $alert_array = $ar->loadDeviceAlertsOfType($uuid, AlertRaised::BELL_PRESS, 1);
+                                echo json_encode($alert_array);
                             }
                             else {
                                 echo json_encode(array('code' => 434, 'message' => 'Alert type not found'));
@@ -134,32 +141,40 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 case 'lastalerts':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
+                        $count=$_GET['cnt'];
+                        
                         
                         if (isset($_GET['type'])) {
                             $type=$_GET['type'];
                             
-                            $ar = new AlertRaised();
                             if ($type == 'fd'){
+                                $face = new Face();
                                 // return face detected
                                 $fo = $face->getFaces($user_name, AlertRaised::FACE_DETECTED, 10);
                                 error_log("Last face detected $fo");
                             }
                             else if ($type == 'fr') {
+                                $face = new Face();
                                 // return face recognized
                                 $fo = $face->getFaces($user_name, AlertRaised::FACE_RECOGNIZED, 10);
                                 error_log("Last face recognized $fo");
                             }
                             else if ($type == 'gd') {
+                                $face = new Face();
                                 // return face recognized
                                 $fo = $face->getFaces($user_name, AlertRaised::GRID_DETECTED, 10);
                                 error_log("Last grid detected $fo");
+                            }
+                            else if ($type == 'bp') {
+                                $ar = new AlertRaised();
+                                $alert_array=$ar->loadDeviceAlertsOfType($uuid, AlertRaised::BELL_PRESS, 20);
+                                echo json_encode($alert_array);
                             }
                             else {
                                 echo json_encode(array('code' => 434, 'message' => 'Alert type not found'));
                             }
                         }
                         else { // if type not set send last motion alert
-                            
                             $client = new Aws ();
                             $ivs = $client->latestMotionDataUrls($uuid);
                             if (count($ivs) == 0){
@@ -168,7 +183,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             else {
                                 $motion_array = array();
                                 foreach (array_reverse($ivs) as $iv) {
+                                    if ($count <= 0)
                                     $motion_array[] = $iv;
+                                    $count--;
                                 }
                                 echo json_encode($motion_array);
                             }
@@ -181,10 +198,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 case 'history':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
-			$count=20;
-			if(isset($_GET['cnt'])){
-                            $count=$_GET['cnt']; 
-			}
                         $client = new Aws ();
                         $dev = new Device();
                         $device = $dev->loadDevice ( $uuid );
@@ -207,10 +220,11 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             $motions = $client->loadMotionData ( $uuid, $date );
                         }
                         $history = array();
+                        $i=0;
                         foreach ( $motions as $motion ) {
                             $furl = $client->getSignedFileUrl ( $motion->image );
                             $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
-			    if (--$count <= 0)break;
+                            if ($i++ > 50)break;
                         }
                         error_log("H Size=".count($history));
                         echo json_encode($history);
@@ -295,17 +309,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         $client = new Aws ();
                         
                         $client->sendActionBroker ( $uuid, "Snap", $quality );
-                        echo json_encode(array('code' => 206, 'message' => 'Snap action sent'));
-                    }
-                    else {
-                        echo json_encode(array('code' => 404, 'message' => 'Missing uuid'));
-                    }
-                    break;
-                case 'sip':
-                    if (isset($_GET['uuid'])){
-                        $uuid=$_GET['uuid'];
-                        $client = new Aws ();
-                        
                         echo json_encode(array('code' => 206, 'message' => 'Snap action sent'));
                     }
                     else {

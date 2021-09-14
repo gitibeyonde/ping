@@ -210,10 +210,7 @@ class AlertRaised
         }
         return 1;
     }
-
-    public function getLastAlert($uuid, $type){
-
-    }
+    
     public function checkNoRepeatAlert($uuid, $type, $current_date, $delta, $value, $comment){
         if ($delta == 0){
             return 0;
