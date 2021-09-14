@@ -141,7 +141,10 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 case 'lastalerts':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
-                        $count=$_GET['cnt'];
+			$count=20;
+			if(isset($_GET['cnt'])){
+                            $count=$_GET['cnt'];
+			}
                         
                         
                         if (isset($_GET['type'])) {
