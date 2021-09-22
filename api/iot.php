@@ -243,6 +243,22 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         echo json_encode($history);
                     }
                     break;
+                case 'delhist':
+                    if (isset($_GET['uuid'])){
+                        $uuid=$_GET['uuid'];
+                        $client = new Aws ();
+                        $dev = new Device();
+                        $device = $dev->loadDevice ( $uuid );
+                        if ($device == null){
+                            echo json_encode(array('code' => 441, 'message' => 'Device not found for this account'));
+                            break;
+                        }
+                        $dev->deleteLastAlerts($uuid);
+                        $A = new Aws();
+                        $A->deleteMotionData($uuid);
+                        echo json_encode(array('code' => 1, 'message' => 'success'));
+                    }
+                    break;
                 case 'live':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];

@@ -64,6 +64,19 @@ class Device
     }
     
 
+    public function deleteLastAlerts($uuid)
+    {
+        //error_log("Deleteing device =".$uuid);
+        if ($this->databaseConnection()) {
+
+            $query_device = $this->db_connection->prepare ( 'delete FROM motion_last WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            //error_log("Error=".implode(",", $query_device->errorInfo()));
+        }
+    }
+
+
     public function deleteDevice($uuid)
     {
         //error_log("Deleteing device =".$uuid);
@@ -84,7 +97,6 @@ class Device
             $query_device = $this->db_connection->prepare('delete FROM device WHERE uuid = :uuid');
             $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
             $query_device->execute();
-            exec ('curl --silent "http://'.SIP_USER.":".SIP_PASS."@".SIP_HOST.":".SIP_PORT."/showUsers.html?remove.".$uuid.'@sip.ibeyonde.com=on"');
             
             //error_log("Error=".implode(",", $query_device->errorInfo()));
         }
