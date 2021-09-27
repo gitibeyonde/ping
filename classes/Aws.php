@@ -118,11 +118,12 @@ class Aws {
 
     public function loadTimeMotionData($uuid, $path, $time1, $time2){ // format path = 2016/06/02; time1 = 05 time2=08
         $time1=intval($time1);
-        $time2=intval($time2) - 1;
+        $time2=intval($time2) + 1;
         $motions = $this->loadMotionData ( $uuid,  $path );
         $motion_array = array();
+        error_log($time1 . ".." . $time2);
         foreach ($motions as $motion){
-            error_log($time1 . ".." . $time2);
+            error_log("check"." --".intval($motion->hour) ."..".intval($motion->minute));
             if (intval($motion->hour) == $time1 && intval($motion->minute) <= $time2) {
                 error_log("push"." --".print_r($motion, true));
                 array_push($motion_array, $motion);
@@ -131,10 +132,13 @@ class Aws {
         $time1 = $time1 -1;
         if (count($motion_array) < 10){
             error_log($time1 . "..**");
-            if (intval($motion->hour) == $time1) {
-                error_log("push"." --".print_r($motion, true));
-                array_push($motion_array, $motion);
-            }
+            foreach ($motions as $motion){
+                error_log("check"." --".intval($motion->hour) ."..".intval($motion->minute));
+                if (intval($motion->hour) == $time1) {
+                    error_log("push"." --".print_r($motion, true));
+                    array_push($motion_array, $motion);
+                }
+	    }
         }
         error_log("Size=" . count($motion_array));
         usort($motion_array, array($this, "compareAsc"));
