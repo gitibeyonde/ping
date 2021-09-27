@@ -130,28 +130,29 @@ class Aws {
         if (!isset($uuid)){
             throw new Exception("AWS Invalid uuid ".$uuid);
         }
-        $motion=array();
+        $motion_array=array();
         $iterator = self::$s3->getIterator('ListObjects', array(
                 'Bucket' => self::bucket, 'Prefix' => $uuid.'/'.$date
         ));
         
         foreach ($iterator as $object) {
-            $motion[] = new Motion($object['Key']);
+            $motion_array[] = new Motion($object['Key']);
         }
-        usort($motion, array($this, "compareAsc"));
+        usort($motion_array, array($this, "compareAsc"));
         
-        return $motion;    
+        return $motion_array;
     }
     
-    public function loadTimeMotionData($uuid, $path, $time1){ // format path = 2016/06/02; time1 = 05 time2=08
+    public function loadTimeMotionData($uuid, $path, $time1, $time2){ // format path = 2016/06/02; time1 = 05 time2=08
         $motions = $this->loadMotionData ( $uuid,  $path );
-        $urls = array();
+        $motion_array = array();
         foreach ($motions as $motion){
-            if ($motion->hour == $time1) {
-                array_push($urls, $motion);
+            error_log($time1 . ".." . $time2." --".print_r($motion, true));
+            if ($motion->hour == $time1 && $motion->minute = $time2) {
+                array_push($motion_array, $motion);
             }
         }
-        return $urls;
+        return $motion_array;
     }
     
     public function loadMinuteMotionDataUrl($uuid, $path, $time){ // format path = 2016/06/02; time = 05_21 NOTE this loads URL not objects 

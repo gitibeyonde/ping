@@ -226,11 +226,13 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                             $date = $today;
                         }
                         $motions = null;
-                        if (isset ( $_GET ["hour"] )) {
+                        if (isset ( $_GET ["hour"] ) && isset ( $_GET ["minute"] )) {
                             $hour = $_GET ["hour"];
-                            $motions = $client->loadTimeMotionData ( $uuid, $date, $hour );
+                            $minute = $_GET ["minute"];
+                            $motions = $client->loadTimeMotionData ( $uuid, $date, $hour, $minute );
                         } else {
-                            $motions = $client->loadMotionData ( $uuid, $date );
+                            echo json_encode(array('code' => 447, 'message' => 'time value not set in this request'));
+                            break;
                         }
                         $history = array();
                         $i=0;
