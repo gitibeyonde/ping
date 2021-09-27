@@ -141,10 +141,10 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 case 'lastalerts':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
-			$count=20;
-			if(isset($_GET['cnt'])){
-                            $count=$_GET['cnt'];
-			}
+                        $count=20;
+                        if(isset($_GET['cnt'])){
+                                        $count=$_GET['cnt'];
+                        }
                         
                         
                         if (isset($_GET['type'])) {
@@ -208,6 +208,41 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         }
                     }
                     break;
+                case 'bellalerts':
+                    if (isset($_GET['uuid'])){
+                        $uuid=$_GET['uuid'];
+                        $client = new Aws ();
+                        $dev = new Device();
+                        $device = $dev->loadDevice ( $uuid );
+                        if ($device == null){
+                            echo json_encode(array('code' => 441, 'message' => 'Device not found for this account'));
+                            break;
+                        }
+                        $date = '';
+                        $today = Utils::dateNow ( $device->timezone );
+                        if (isset ( $_GET ["date"] )) {
+                            $date = $_GET ["date"];
+                        } else {
+                            $date = $today;
+                        }
+                        $motions = null;
+                        if (isset ( $_GET ["hour"] )) {
+                            $hour = $_GET ["hour"];
+                            $motions = $client->loadTimeMotionData ( $uuid, $date, $hour );
+                        } else {
+                            $motions = $client->loadMotionData ( $uuid, $date );
+                        }
+                        $history = array();
+                        $i=0;
+                        foreach ( $motions as $motion ) {
+                            $furl = $client->getSignedFileUrl ( $motion->image );
+                            $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
+                            if ($i++ > 10)break;
+                        }
+                        error_log("H Size=".count($history));
+                        echo json_encode($history);
+                    }
+                    break;
                 case 'history':
                     if (isset($_GET['uuid'])){
                         $uuid=$_GET['uuid'];
@@ -237,7 +272,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         foreach ( $motions as $motion ) {
                             $furl = $client->getSignedFileUrl ( $motion->image );
                             $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
-                            if ($i++ > 50)break;
+                            if ($i++ > 20)break;
                         }
                         error_log("H Size=".count($history));
                         echo json_encode($history);
