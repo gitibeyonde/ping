@@ -41,7 +41,7 @@
                     $db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
                     $sql="insert into device (uuid, user_name, device_name, box_name, timezone, capabilities, version, setting, nat, deviceip, visibleip, created, updated) ".
                             "values ( '$uuid', '$user', '$device_name', 'default', '$timezone', '$capabilities', '$version', '', 0, '$ip', '$remoteip', now(), now()) ".
-                            "on duplicate key update user_name=VALUES(user_name), box_name=VALUES(box_name), capabilities=VALUES(capabilities), timezone=VALUES(timezone), version=VALUES(version), setting=VALUES(setting), deviceip=VALUES(deviceip), visibleip=VALUES(visibleip);";
+                            "on duplicate key update device_name=VALUES(device_name), user_name=VALUES(user_name), box_name=VALUES(box_name), capabilities=VALUES(capabilities), timezone=VALUES(timezone), version=VALUES(version), setting=VALUES(setting), deviceip=VALUES(deviceip), visibleip=VALUES(visibleip);";
                     $db_connection->exec($sql);
                     echo json_encode(array('success' => 'device registered or device parameters updated'));
                     $utils->token($uuid);

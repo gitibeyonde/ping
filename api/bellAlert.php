@@ -5,7 +5,6 @@ define ( '__ROOT__',   dirname ( dirname ( __FILE__ )));
 require_once(__ROOT__.'/classes/AlertRaised.php');
 require_once(__ROOT__.'/classes/Utils.php');
 
-
 if (isset($_GET["hn"])){
     if (isset($_POST["t"])){
         $token=urldecode($_POST["t"]);
@@ -28,7 +27,23 @@ if (isset($_GET["hn"])){
     }
 
     $ar = new AlertRaised();
-    $ar->notifyBellRing($uuid, new DateTime());
+
+    $timezone=urldecode($_GET["tz"]);
+    if (isset($_GET["ts"])){
+	$ts=urldecode($_GET["ts"]);
+        $time = substr($ts, 0, 4). "/" .substr($ts, 4, 2). "/" .substr($ts, 6, 2) ." - " .substr($ts, 8, 2).":".substr($ts, 10, 2).":".substr($ts, 12, 2);
+	//error_log($ts);
+        $dtz = new DateTimeZone($timezone);
+	//error_log($time);// 2021/10/03 - 21:22:38
+        $datetime = DateTime::createFromFormat('Y/m/d - H:i:s', $time, $dtz);
+    }
+    else {
+        $datetime = new DateTime();
+        $timezone = new DateTimeZone($timezone);
+        $datetime->setTimezone($timezone);
+    }
+    $ar = new AlertRaised();
+    $ar->notifyBellRing($uuid, $datetime);
 
     echo json_encode(array('success' => '0'));
 }
