@@ -43,10 +43,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 $user_name = $_POST['user_name'];
                 $user_email = $_POST['user_email'];
                 $user_phone = $_POST['user_phone'];
-                $user_password = $_POST['user_password_new'];
-                $user_password_repeat = $_POST['user_password_repeat'];
+                $user_password = $_POST['user_password'];
                 $registration = new Registration();
-                $registration->registerNewUserFromApp($user_name, $user_email, $user_phone, $user_password, $user_password_repeat);
+                $registration->registerNewUserFromApp($user_name, $user_email, $user_phone, $user_password, $user_password);
                 if (count($registration->errors) > 0){
                     echo json_encode(array('code' => 405, 'message' => $registration->errors[0]));
                 }
@@ -54,6 +53,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                     echo json_encode(array('code' => 205, 'message' => 'Registration Successful'));
                 }
                 break;
+            case 'reset':
+                $user_name = $_POST['user_name'];
+                echo json_encode(array('code' => 405, 'message' => 'Error in password reset'));
             default:
                 echo json_encode(array('code' => 402, 'message' => 'Unrecognized unauthenticated command'));
         }
@@ -313,7 +315,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         $pr = new RegistryPort();
                         list($ip, $port) = $pr->getIpAndPort($uuid);  // BINI, TINI, SINI, MINI, HINI
                         
-                        $url = "https://".$ip."/udp/live_n.php?timezone=".$device->timezone."&user_name=".$user_name."&quality=".$quality."&user_id=".
+                        $url = "https://".$ip."/udp/live_n.php?user_name=".$user_name."&quality=".$quality."&user_id=".
                          $user->user_id."&uuid=".$uuid."&port=".$port."&sid=".mt_rand().
                         "&tk=".$device->token."&rand=".mt_rand();
                         error_log("Live url = ". $url);
