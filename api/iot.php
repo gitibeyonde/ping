@@ -43,10 +43,9 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 $user_name = $_POST['user_name'];
                 $user_email = $_POST['user_email'];
                 $user_phone = $_POST['user_phone'];
-                $user_password = $_POST['user_password_new'];
-                $user_password_repeat = $_POST['user_password_repeat'];
+                $user_password = $_POST['user_password'];
                 $registration = new Registration();
-                $registration->registerNewUserFromApp($user_name, $user_email, $user_phone, $user_password, $user_password_repeat);
+                $registration->registerNewUserFromApp($user_name, $user_email, $user_phone, $user_password, $user_password);
                 if (count($registration->errors) > 0){
                     echo json_encode(array('code' => 405, 'message' => $registration->errors[0]));
                 }
@@ -54,6 +53,16 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                     echo json_encode(array('code' => 205, 'message' => 'Registration Successful'));
                 }
                 break;
+            case 'reset':
+                $login = new Login();
+                $user_email = $_POST['user_email'];
+                $result = $login->setPasswordResetDatabaseTokenAndSendMail($user_email);
+                if ($result){
+                    echo json_encode(array('code' => 200, 'message' => 'Password reset email sent to you email id.'));
+                }
+                else {
+                    echo json_encode(array('code' => 405, 'message' => print_r($login->errors, true)));
+                }
             default:
                 echo json_encode(array('code' => 402, 'message' => 'Unrecognized unauthenticated command'));
         }
