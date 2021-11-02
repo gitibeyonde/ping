@@ -123,9 +123,10 @@ class DeviceToken
         error_log("addDeviceToken $user_name, $phone_id, $token, $system, $system_type, $language, $country, $endpoint_arn");
         if ($this->databaseConnection()) {
             // database query, getting all the info of the selected user
-            $sth = $this->db_connection->prepare('insert into device_token(user_name, phone_id, token, endpoint_arn, system, system_type, language, country, updated) \
-                                 values(:user_name, :phone_id, :token, :endpoint_arn, :system, :system_type, :language, :country, now()) \
+	        $sth = $this->db_connection->prepare('insert into device_token(user_name, phone_id, token, endpoint_arn, system, system_type, language, country, updated) 
+                                 values(:user_name, :phone_id, :token, :endpoint_arn, :system, :system_type, :language, :country, now()) 
                                     on duplicate key update token=:token, endpoint_arn=:endpoint_arn, system=:system, system_type=:system_type, language=:language, country=:country, updated=now()');
+
             $sth->bindValue(':user_name',  $user_name, PDO::PARAM_STR);
             $sth->bindValue(':phone_id', $phone_id, PDO::PARAM_STR);
             $sth->bindValue(':token', $token, PDO::PARAM_STR);

@@ -322,7 +322,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         $pr = new RegistryPort();
                         list($ip, $port) = $pr->getIpAndPort($uuid);  // BINI, TINI, SINI, MINI, HINI
                         
-                        $url = "https://".$ip."/udp/live_n.php?timezone=".$device->timezone."&user_name=".$user_name."&quality=".$quality."&user_id=".
+                        $url = "https://".$ip."/udp/live_n.php?user_name=".$user_name."&quality=".$quality."&user_id=".
                          $user->user_id."&uuid=".$uuid."&port=".$port."&sid=".mt_rand().
                         "&tk=".$device->token."&rand=".mt_rand();
                         error_log("Live url = ". $url);
