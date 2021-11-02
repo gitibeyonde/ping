@@ -604,7 +604,7 @@ class Login
         $user_email = trim($user_email);
         
         if (empty($user_email)) {
-            $this->errors[] = MESSAGE_USERNAME_EMPTY;
+            $this->errors[] = MESSAGE_EMAIL_EMPTY;
             
         } else {
             // generate timestamp (to see when exactly the user (or an attacker) requested the password reset mail)
@@ -637,7 +637,7 @@ class Login
                     $this->errors[] = MESSAGE_DATABASE_ERROR;
                 }
             } else {
-                $this->errors[] = MESSAGE_USER_DOES_NOT_EXIST;
+                $this->errors[] = MESSAGE_EMAIL_DOES_NOT_EXISTS;
             }
         }
         // return false (this method only returns true when the database entry has been set successfully)
@@ -687,15 +687,15 @@ class Login
         ));
         
         $msg = array();
-        $msg['Source'] = EMAIL_PASSWORDRESET_FROM;
+        $msg['Source'] = 'no_reply@ibeyonde.com';
         $msg['Destination']['ToAddresses'][] = $user_email;
         
-        $msg['Message']['Subject']['Data'] = EMAIL_PASSWORDRESET_SUBJECT;
+        $msg['Message']['Subject']['Data'] = "Password reset";
         $msg['Message']['Subject']['Charset'] = "UTF-8";
         
-        $link = EMAIL_PASSWORDRESET_URL.'?user_name='.urlencode($user_name).'&verification_code='.urlencode($user_password_reset_hash);
+        $link = 'https://app.ibeyonde.com/'.'?user_name='.urlencode($user_name).'&verification_code='.urlencode($user_password_reset_hash);
         
-        $msg['Message']['Body']['Html']['Data'] = EMAIL_PASSWORDRESET_CONTENT.'<br/> <a href="'.$link.'">'.$link.'</a>';
+        $msg['Message']['Body']['Html']['Data'] = 'Please click on the link below to reset your password for Ibeyonde.com'.'<br/> <a href="'.$link.'">'.$link.'</a>';
         $msg['Message']['Body']['Html']['Charset'] = "UTF-8";
         
         $result = $client->sendEmail($msg);

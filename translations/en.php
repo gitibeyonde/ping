@@ -15,6 +15,7 @@ define("MESSAGE_EMAIL_ALREADY_EXISTS", "This email address is already registered
 define("MESSAGE_EMAIL_CHANGE_FAILED", "Sorry, your email changing failed.");
 define("MESSAGE_EMAIL_CHANGED_SUCCESSFULLY", "Your email address has been changed successfully. New email address is ");
 define("MESSAGE_EMAIL_EMPTY", "Email cannot be empty");
+define("MESSAGE_EMAIL_DOES_NOT_EXISTS", "This email address does not exists.");
 define("MESSAGE_PHONE_EMPTY", "Phone cannot be empty");
 define("MESSAGE_PHONE_INVALID", "Invalid Phone number");
 define("MESSAGE_EMAIL_INVALID", "Your email address is not in a valid email format");

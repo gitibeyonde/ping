@@ -2,19 +2,13 @@
 
 define ( '__ROOT__', dirname ( dirname ( __FILE__ ) ) );
 
-//Installed on app.ibeyonde.com
-
-if (version_compare(PHP_VERSION, '5.3.7', '<')) {
-    exit('Sorry, this script does not run on a PHP version smaller than 5.3.7 !');
-} else if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-    require_once(__ROOT__.'/libraries/password_compatibility_library.php');
-}
 require_once(__ROOT__.'/classes/Registration.php');
-require_once(__ROOT__ .'/config/config.php');
+require_once(__ROOT__.'/config/config.php');
 require_once(__ROOT__.'/translations/en.php');
-require_once(__ROOT__ .'/classes/Registration.php');
-require_once(__ROOT__ .'/classes/Device.php');
-require_once(__ROOT__ .'/classes/Aws.php');
+require_once(__ROOT__.'/classes/Registration.php');
+require_once(__ROOT__.'/classes/Login.php');
+require_once(__ROOT__.'/classes/Device.php');
+require_once(__ROOT__.'/classes/Aws.php');
 require_once(__ROOT__.'/classes/Utils.php');
 require_once(__ROOT__.'/classes/UserFactory.php');
 require_once(__ROOT__.'/classes/User.php');
@@ -36,6 +30,8 @@ function getSSLPage($url) {
     return $res;
 }
 
+		error_log(print_r($_POST, true));
+		error_log(print_r($_GET, true));
 if (!isset($_SERVER['PHP_AUTH_USER'])) {
     if (isset($_GET['view'])){
         switch ($_GET['view']) {
@@ -50,12 +46,12 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                     echo json_encode(array('code' => 405, 'message' => $registration->errors[0]));
                 }
                 else {
-                    echo json_encode(array('code' => 205, 'message' => 'Registration Successful'));
+                    echo json_encode(array('code' => 205, 'message' => 'Registration Successful, you will get a validation email.'));
                 }
                 break;
             case 'reset':
+                $user_email = $_GET['user_email'];
                 $login = new Login();
-                $user_email = $_POST['user_email'];
                 $result = $login->setPasswordResetDatabaseTokenAndSendMail($user_email);
                 if ($result){
                     echo json_encode(array('code' => 200, 'message' => 'Password reset email sent to you email id.'));
@@ -67,7 +63,6 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 echo json_encode(array('code' => 402, 'message' => 'Unrecognized unauthenticated command'));
         }
     }
-    //echo json_encode(array('code' => 101, 'message' => 'UnAuthorized, for more info contact Administrator at info@ibeyonde.com'));
     exit;
 } else {
     $utils = new Utils();
