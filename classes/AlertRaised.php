@@ -114,8 +114,9 @@ class AlertRaised
        $uuids = array();
        $devices = Device::loadUserDevices($user_name);
        foreach($devices as $device) {
-           $uuids = array_merge($uuids, $device->uuid);
+           array_push($uuids, $device->uuid);
        }
+       //error_log(print_r($uuids, true));
        $alerts = $this->loadAllDeviceAlerts($uuids);
        $aws = new Aws();
        foreach($alerts as $alert){
@@ -192,7 +193,7 @@ class AlertRaised
         catch (PDOException $e) {
             $this->errors[] = MESSAGE_DATABASE_ERROR;
         }
-        error_log(print_r($alerts, true));
+        //error_log(print_r($alerts, true));
         return $alerts;
     }
     

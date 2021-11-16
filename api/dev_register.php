@@ -15,7 +15,7 @@
         $device_name = $_GET['name'];
         $capabilities = urldecode($_GET['cap']);
         $version = urldecode($_GET['v']);
-        $mac = urldecode($_GET['mac']);
+        #$mac = urldecode($_GET['mac']);
         $ip = urldecode($_GET['ip']);
         $remoteip = urldecode($_SERVER['REMOTE_ADDR']);
 
