@@ -111,10 +111,12 @@ class AlertRaised
     public function loadDeviceAlertsforUser($user_name)
     {
        $alerts = array();
+       $uuids = array();
        $devices = Device::loadUserDevices($user_name);
        foreach($devices as $device) {
-           $alerts = array_merge($alerts, $this->loadAllDeviceAlerts($device->uuid));
+           $uuids = array_merge($uuids, $device->uuid);
        }
+       $alerts = $this->loadAllDeviceAlerts($uuids);
        $aws = new Aws();
        foreach($alerts as $alert){
            $alert->image = $aws->getSignedFileUrl($alert->image);
@@ -171,29 +173,29 @@ class AlertRaised
         return $alerts;
     }
 
-    public function loadAllDeviceAlerts($uuid)
+    public function loadAllDeviceAlerts($uuids)
     {
         // if database connection opened
         $alerts = array();
         try {
             if ($this->databaseConnection()) {
                 // database query, getting all the info of the selected user
-                $query_user = $this->db_connection->prepare('SELECT * FROM alert_raised WHERE uuid = :uuid order by created desc limit 10');
-                $query_user->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+                $inQuery = implode(',', array_fill(0, count($uuids), '?'));
+                $query_user = $this->db_connection->prepare('SELECT * FROM alert_raised WHERE uuid IN (' . $inQuery. ')  order by created desc limit 10');
                 $query_user->setFetchMode(PDO::FETCH_CLASS, 'AlertRaised');
-                $query_user->execute();
+                $query_user->execute($uuids);
                 while($obj = $query_user->fetch()){
                     $alerts[]=$obj;
                 }
-
-                //error_log("Error=".implode(",", $query_user->errorInfo()));
             }
         }
         catch (PDOException $e) {
             $this->errors[] = MESSAGE_DATABASE_ERROR;
         }
+        error_log(print_r($alerts, true));
         return $alerts;
     }
+    
     public function deleteAlert($id)
     {
         if ($this->databaseConnection()) {
