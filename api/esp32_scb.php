@@ -4,7 +4,7 @@ define ( '__ROOT__', dirname ( dirname ( __FILE__ ) ) );
 require_once(__ROOT__.'/config/config.php');
 require_once(__ROOT__.'/classes/Utils.php');
 
-const VERSION=5;
+const VERSION=6;
 
 if (isset($_GET['veil']) && isset($_GET['uuid'])){
     $veil = $_GET['veil'];
@@ -13,7 +13,8 @@ if (isset($_GET['veil']) && isset($_GET['uuid'])){
     $myveil = $utils->token($uuid);
     if ($veil == $myveil){
         echo VERSION;
+	return;
     }
 }
-echo 0;
+echo 5;
 ?>
