@@ -73,12 +73,12 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
             switch ($_GET['view']) {
                 case 'veil':
                     if (isset($_GET['uuid'])){
-			$uuid = $_GET['uuid'];
-                    	echo $utils->token($uuid);
-		    }
-		    else {
-			echo json_encode(array('code' => 404, 'message' => 'Missing uuid'));
-		    }
+                        $uuid = $_GET['uuid'];
+                        echo $utils->token($uuid);
+                    }
+                    else {
+                        echo json_encode(array('code' => 404, 'message' => 'Missing uuid'));
+                    }
                     break;
                 case 'login':
                     echo json_encode(array('code' => 200, 'message' => 'Success'));
