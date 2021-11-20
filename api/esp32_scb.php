@@ -6,15 +6,10 @@ require_once(__ROOT__.'/classes/Utils.php');
 
 const VERSION=6;
 
-if (isset($_GET['veil']) && isset($_GET['uuid'])){
-    $veil = $_GET['veil'];
+if (isset($_GET['uuid'])){
     $uuid = $_GET['uuid'];
     $utils = new Utils();
-    $myveil = $utils->token($uuid);
-    if ($veil == $myveil){
-        echo VERSION;
-	return;
-    }
+    $veil = $utils->token($uuid);
+    echo VERSION."-".$veil;
 }
-echo 5;
 ?>
