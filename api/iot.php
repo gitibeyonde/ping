@@ -59,6 +59,7 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                 else {
                     echo json_encode(array('code' => 405, 'message' => print_r($login->errors, true)));
                 }
+		break;
             default:
                 echo json_encode(array('code' => 402, 'message' => 'Unrecognized unauthenticated command'));
         }
