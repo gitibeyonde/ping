@@ -1,4 +1,6 @@
 <?php
+#define ( '__ROOT__',   dirname ( dirname ( __FILE__ )));
+
 require_once (__ROOT__ . '/libraries/aws.phar');
 require_once(__ROOT__.'/classes/Motion.php');
 require_once(__ROOT__.'/classes/DeviceToken.php');
@@ -56,14 +58,15 @@ class AwsSns {
             if ($endpoint->system == 'iOS') {
                 $json_message = json_encode(array(
                     'GCM' => json_encode(array(
+			"to" => $uuid,
                         'notification' => array(
-                            'title' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
+                            'title' => Device::getDeviceName($uuid),
+                            'subtitle' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
                             'body' => $timestamp_str,
-                            'type' => $alert_type,
                         ),
                         'data' => array(
+                            'mutable-content' => true,
                             'id' => $id,
-                            'title' =>  AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
                             'type' => $alert_type,
                             'uuid' => $uuid,
                             'name' => Device::getDeviceName($uuid),
@@ -74,8 +77,10 @@ class AwsSns {
                         ),
                     ))
                 ));
+		error_log(print_r($json_message, true));
             }
             else {
+		//continue;
                 $json_message = json_encode(array(
                     'GCM' => json_encode(array(
                         'data' => array(
@@ -114,6 +119,6 @@ class AwsSns {
 }
 
 //$awssns = new AwsSns();
-//$awssns->publishToEndpoint("17", "4d6711e1", "hl", "", 7, "Units", "2018-07-18 15:59:41 Asia/Calcutta");
+//$awssns->publishToEndpoint("536229", "e8db843deaec", "bp", "https://www.ibeyonde.com/img/best-door-bell-with-camera-in-india.jpeg", 7, "Units", "2021-12-10 15:59:41");
 
 ?>
