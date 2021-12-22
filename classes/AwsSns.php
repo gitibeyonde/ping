@@ -57,10 +57,8 @@ class AwsSns {
             $json_message=null;
             if ($endpoint->system == 'iOS') {
                 $json_message = json_encode(array(
-
-		    $json_message = json_encode(array(
                     'GCM' => json_encode(array(
-			"to" => $uuid,
+                        "to" => $uuid,
                         'notification' => array(
                             'title' => Device::getDeviceName($uuid),
                             'subtitle' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
@@ -81,7 +79,7 @@ class AwsSns {
                 ));
             }
             else {
-		//continue;
+                //continue;
                 $json_message = json_encode(array(
                     'GCM' => json_encode(array(
                         'data' => array(
