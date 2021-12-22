@@ -52,32 +52,33 @@ class AwsSns {
         $endpoint_arns = $dt->loadDeviceTokensForDevice($uuid);
        
        
-        error_log("End point ARNS".print_r($endpoint_arns, true));
         foreach ($endpoint_arns as &$endpoint) {
+	    error_log("End point ----".print_r($endpoint->token, true));
             $json_message=null;
             if ($endpoint->system == 'iOS') {
                 $json_message = json_encode(array(
+
+		    $json_message = json_encode(array(
                     'GCM' => json_encode(array(
 			"to" => $uuid,
                         'notification' => array(
                             'title' => Device::getDeviceName($uuid),
                             'subtitle' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
                             'body' => $timestamp_str,
+                            'mutable_content' => true,
+                            'image' => $image,
                         ),
                         'data' => array(
-                            'mutable-content' => true,
                             'id' => $id,
                             'type' => $alert_type,
                             'uuid' => $uuid,
                             'name' => Device::getDeviceName($uuid),
-                            'image' => $image,
                             'value' => $value,
                             'comment' => $comment,
                             'created' => $timestamp_str,
                         ),
                     ))
                 ));
-		error_log(print_r($json_message, true));
             }
             else {
 		//continue;
