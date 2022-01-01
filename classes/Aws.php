@@ -117,9 +117,9 @@ class Aws {
     
 
     public function loadTimeMotionData($uuid, $path, $time1, $time2){ // format path = 2016/06/02; time1 = 05 time2=08
+        $motions = $this->loadMotionData ( $uuid,  $path."/".$time1 );
         $time1=intval($time1);
         $time2=intval($time2) + 1;
-        $motions = $this->loadMotionData ( $uuid,  $path );
         $motion_array = array();
         error_log($time1 . ".." . $time2);
         foreach ($motions as $motion){
@@ -129,7 +129,8 @@ class Aws {
                 array_push($motion_array, $motion);
             }
         }
-        $time1 = $time1 -1;
+        $time1 = $time1 - 1;
+        $motions = $this->loadMotionData ( $uuid,  $path."/".($time1 < 10 ? "0".$time1 : $time1));
         if (count($motion_array) < 10){
             error_log($time1 . "..**");
             foreach ($motions as $motion){
