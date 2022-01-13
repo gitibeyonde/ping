@@ -17,7 +17,7 @@ class Aws {
             );
 
     
-    const bucket = 'data.ibeyonde';
+    const bucket = 'com.ibeyonde.cam';
     public function __construct() {
         if (self::$s3 == null) {
             self::$s3 = Aws\S3\S3Client::factory ( self::$credentials  );
@@ -117,7 +117,7 @@ class Aws {
     
 
     public function loadTimeMotionData($uuid, $path, $time1, $time2){ // format path = 2016/06/02; time1 = 05 time2=08
-        $motions = $this->loadMotionData ( $uuid,  $path."/".$time1 );
+        $motions = $this->loadMotionData ( $uuid,  $path."/".($time1 < 10 ? "0".$time1 : $time1) );
         $time1=intval($time1);
         $time2=intval($time2) + 1;
         $motion_array = array();
@@ -149,6 +149,7 @@ class Aws {
 
     public function loadMotionData($uuid, $date) // format 2016/06/02
     {
+	error_log("loadMotionData " . $date);
         if (!isset($uuid)){
             throw new Exception("AWS Invalid uuid ".$uuid);
         }

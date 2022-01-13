@@ -14,9 +14,8 @@ $client = S3Client::factory(array(
     ));
 
 
-//$client = $aws->get('data.ibeyonde');
 //
-$bucket='data.ibeyonde';
+$bucket='com.ibeyonde.cam';
 
 $result = $client->listBuckets();
 
@@ -26,14 +25,14 @@ foreach ($result['Buckets'] as $bucket) {
 
 
 $iterator = $client->getIterator('ListObjects', array(
-        'Bucket' => 'data.ibeyonde', 'Deimiter' => '/', 'Prefix' => '036d2e1237bb4b8790c51961b06b4889/2016/06'
+        'Bucket' => 'com.ibeyonde.cam', 'Deimiter' => '/', 'Prefix' => '036d2e1237bb4b8790c51961b06b4889/2016/06'
     ));
 
 foreach ($iterator as $object) {
         echo $object['Key'] . "\n";
 }
 
-$furl = $client->getObjectUrl('data.ibeyonde', 'test.jpg', '+30 minutes');
+$furl = $client->getObjectUrl('com.ibeyonde.cam', 'test.jpg', '+30 minutes');
 
 
 echo "<img src=\"$furl\">test</img><br/>";

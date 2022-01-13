@@ -19,7 +19,7 @@ use Aws\Common\Enum\Region;
 session_start();
 set_time_limit(20);
 
-$bucket='data.ibeyonde';
+$bucket='com.ibeyonde.cam';
 
 function outputRequest(){
      error_log("FILE CONTENT ".file_get_contents( 'php://input' ));

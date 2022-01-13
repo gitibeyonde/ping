@@ -19,7 +19,7 @@ use Aws\Common\Enum\Region;
 session_start();
 set_time_limit(20);
 
-$bucket='data.ibeyonde';
+$bucket='com.ibeyonde.cam';
 
 
 if (isset($_POST['t']) && isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(basename($_FILES["fileToUpload"]["name"])) > 0){
