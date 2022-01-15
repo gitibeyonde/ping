@@ -18,7 +18,7 @@ class AwsSns {
                     'region' => S3_REGION
             );
     
-    private static $app_arn = "arn:aws:sns:us-west-2:574451441288:app/GCM/CleverCam";
+    private static $app_arn = "arn:aws:sns:ap-south-1:574451441288:app/GCM/CleverCam";//"arn:aws:sns:us-west-2:574451441288:app/GCM/CleverCam";
     
     public function __construct() {
         if (self::$sns == null) {
@@ -65,8 +65,6 @@ class AwsSns {
                             'body' => $timestamp_str,
                             'mutable_content' => true,
                             'image' => $image,
-                        ),
-                        'data' => array(
                             'id' => $id,
                             'type' => $alert_type,
                             'uuid' => $uuid,
@@ -82,6 +80,7 @@ class AwsSns {
                 //continue;
                 $json_message = json_encode(array(
                     'GCM' => json_encode(array(
+                        "to" => $uuid,
                         'data' => array(
                             'id' => $id,
                             'title' =>  AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
@@ -117,7 +116,5 @@ class AwsSns {
     }
 }
 
-//$awssns = new AwsSns();
-//$awssns->publishToEndpoint("536229", "e8db843deaec", "bp", "https://www.ibeyonde.com/img/best-door-bell-with-camera-in-india.jpeg", 7, "Units", "2021-12-10 15:59:41");
 
 ?>
