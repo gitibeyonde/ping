@@ -4,7 +4,7 @@ define ( '__ROOT__', dirname ( dirname ( __FILE__ ) ) );
 require_once(__ROOT__.'/config/config.php');
 require_once(__ROOT__.'/classes/Utils.php');
 
-const VERSION=7;
+const VERSION=8;
 
 if (isset($_GET['uuid'])){
     $uuid = $_GET['uuid'];

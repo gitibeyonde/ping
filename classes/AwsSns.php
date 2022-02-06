@@ -57,23 +57,23 @@ class AwsSns {
             $json_message=null;
             if ($endpoint->system == 'iOS') {
                 $json_message = json_encode(array(
-                    "GCM" => json_encode(array(
-                        "to" => $uuid,
-                        "notification" => array(
-                            "title" => Device::getDeviceName($uuid),
-                            "subtitle" => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
-                            "body" => $timestamp_str,
-			    "mutable_content" => true,
-                            "image" => $image,
+                    'GCM' => json_encode(array(
+                        'to' => $uuid,
+                        'notification' => array(
+                            'title' => Device::getDeviceName($uuid),
+                            'subtitle' => AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
+                            'body' => $timestamp_str,
+			    'mutable_content' => true,
+                            'image' => $image,
 		    	),
-			"data"=> array(
-                            "id" => $id,
-                            "type" => $alert_type,
-                            "uuid" => $uuid,
-                            "name" => Device::getDeviceName($uuid),
-                            "value" => $value,
-                            "comment" => $comment,
-                            "created" => $timestamp_str,
+			'data'=> array(
+                            'id' => $id,
+                            'type' => $alert_type,
+                            'uuid' => $uuid,
+                            'name' => Device::getDeviceName($uuid),
+                            'value' => $value,
+                            'comment' => $comment,
+                            'created' => $timestamp_str,
                         ),
                     ))
                 ));
@@ -81,18 +81,18 @@ class AwsSns {
             else {
                 //continue;
                 $json_message = json_encode(array(
-                    "GCM" => json_encode(array(
-                        "to" => $uuid,
-                        "data" => array(
-                            "id" => $id,
-                            "title" =>  AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
-                            "type" => $alert_type,
-                            "uuid" => $uuid,
-                            "name" => Device::getDeviceName($uuid),
-                            "image" => $image,
-                            "value" => $value,
-                            "comment" => $comment,
-                            "created" => $timestamp_str,
+                    'GCM' => json_encode(array(
+                        'to' => $uuid,
+                        'data' => array(
+                            'id' => $id,
+                            'title' =>  AlertRaised::getAlertString($uuid, $alert_type, $value, $comment),
+                            'type' => $alert_type,
+                            'uuid' => $uuid,
+                            'name' => Device::getDeviceName($uuid),
+                            'image' => $image,
+                            'value' => $value,
+                            'comment' => $comment,
+                            'created' => $timestamp_str,
                         ),
                     ))
                 ));
