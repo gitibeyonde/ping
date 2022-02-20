@@ -19,8 +19,9 @@
         #$mac = urldecode($_GET['mac']);
         $ip = urldecode($_GET['ip']);
         $remoteip = urldecode($_SERVER['REMOTE_ADDR']);
+        $new = $_GET['n'];
 
-        error_log("Cap=".$capabilities);
+        error_log("Cap=".$capabilities.", new=".$new);
         if (strlen($capabilities) < 1 || strlen($version) < 1){
             echo json_encode(array('errno' => 'sql_401', 'msg' => 'Bad request capabilities or version not specified'));
         }
@@ -41,16 +42,26 @@
                 else {
                     $db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
 
-                    //check if device exists and is not in RESET
-                    $D = new Device();
-                    $device = $D->loadDevice($uuid);
-                    if ($device != null && $device->type == "RESET"){
-                        echo json_encode(array('reset' => 'device is in reset state'));
-                    }
-                    else {
-                        $sql="insert into device (uuid, user_name, device_name, box_name, timezone, capabilities, version, setting, nat, deviceip, visibleip, created, updated) ".
-                                "values ( '$uuid', '$user', '$device_name', 'default', '$timezone', '$capabilities', '$version', '', 0, '$ip', '$remoteip', now(), now()) ".
-                                "on duplicate key update device_name=VALUES(device_name), user_name=VALUES(user_name), box_name=VALUES(box_name), capabilities=VALUES(capabilities), timezone=VALUES(timezone), version=VALUES(version), setting=VALUES(setting), deviceip=VALUES(deviceip), visibleip=VALUES(visibleip);";
+		    if ($new == 'o') {//old device pinging back
+			    $D = new Device();
+			    $device = $D->loadDevice($uuid);
+			    
+			    //check if device exists and if RESET, force reset on the device
+			    if ($device != null && $device->type == "RESET"){
+				echo json_encode(array('reset' => 'device is in reset state'));
+			    }
+			    else {
+				$sql="insert into device (uuid, user_name, device_name, type, box_name, timezone, capabilities, version, setting, nat, deviceip, visibleip, created, updated) ".
+					"values ( '$uuid', '$user', '$device_name', 'NORMAL', 'default', '$timezone', '$capabilities', '$version', '', 0, '$ip', '$remoteip', now(), now()) ".
+					"on duplicate key update device_name=VALUES(device_name), user_name=VALUES(user_name), type='NORMAL', box_name=VALUES(box_name), capabilities=VALUES(capabilities), timezone=VALUES(timezone), version=VALUES(version), setting=VALUES(setting), deviceip=VALUES(deviceip), visibleip=VALUES(visibleip);";
+				$db_connection->exec($sql);
+				echo json_encode(array('success' => 'device registered or device parameters updated'));
+			    }
+		    }
+                    else { // new device registrtaion force NORMAL
+                        $sql="insert into device (uuid, user_name, device_name, type, box_name, timezone, capabilities, version, setting, nat, deviceip, visibleip, created, updated) ".
+                                "values ( '$uuid', '$user', '$device_name', 'NORMAL', 'default', '$timezone', '$capabilities', '$version', '', 0, '$ip', '$remoteip', now(), now()) ".
+                                "on duplicate key update device_name=VALUES(device_name), user_name=VALUES(user_name), type='NORMAL', box_name=VALUES(box_name), capabilities=VALUES(capabilities), timezone=VALUES(timezone), version=VALUES(version), setting=VALUES(setting), deviceip=VALUES(deviceip), visibleip=VALUES(visibleip);";
                         $db_connection->exec($sql);
                         echo json_encode(array('success' => 'device registered or device parameters updated'));
                         $utils->token($uuid);

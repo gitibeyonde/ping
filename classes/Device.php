@@ -54,7 +54,7 @@ class Device
         // if database connection opened
         if ($this->databaseConnection()) {
             // database query, getting all the info of the selected user
-            $query_device = $this->db_connection->prepare('SELECT * FROM device WHERE uuid = :uuid and type="NORMAL"');
+            $query_device = $this->db_connection->prepare('SELECT * FROM device WHERE uuid = :uuid');
             $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
             $query_device->setFetchMode(PDO::FETCH_CLASS, 'Device');
             $query_device->execute();
