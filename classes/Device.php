@@ -47,14 +47,14 @@ class Device
         }
     }
 
-    
+
     public function loadDevice($uuid)
     {
         $device=null;
         // if database connection opened
         if ($this->databaseConnection()) {
             // database query, getting all the info of the selected user
-            $query_device = $this->db_connection->prepare('SELECT * FROM device WHERE uuid = :uuid');
+            $query_device = $this->db_connection->prepare('SELECT * FROM device WHERE uuid = :uuid and type="NORMAL"');
             $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
             $query_device->setFetchMode(PDO::FETCH_CLASS, 'Device');
             $query_device->execute();
@@ -62,7 +62,7 @@ class Device
         }
         return $device;
     }
-    
+
 
     public function deleteLastAlerts($uuid)
     {
@@ -75,6 +75,35 @@ class Device
             //error_log("Error=".implode(",", $query_device->errorInfo()));
         }
     }
+
+    
+    public function deleteHistory($uuid)
+    {
+        //error_log("Deleteing device =".$uuid);
+        if ($this->databaseConnection()) {
+            // database query, getting all the info of the selected user
+            $query_device = $this->db_connection->prepare('update registry_port set uuid = NULL where uuid = :uuid');
+            $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $query_device->execute();
+            $query_device = $this->db_connection->prepare ( 'delete FROM device_cert WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            $query_device = $this->db_connection->prepare ( 'delete FROM stat WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            $query_device = $this->db_connection->prepare ( 'delete FROM motion_last WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            //$query_device = $this->db_connection->prepare('delete FROM device WHERE uuid = :uuid');
+            //$query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $query_device->execute();
+            $query_device = $this->db_connection->prepare('delete FROM alert_config WHERE uuid = :uuid');
+            $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $query_device->execute();
+            //error_log("Error=".implode(",", $query_device->errorInfo()));
+        }
+    }
+
 
 
     public function deleteDevice($uuid)
@@ -97,11 +126,37 @@ class Device
             $query_device = $this->db_connection->prepare('delete FROM device WHERE uuid = :uuid');
             $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
             $query_device->execute();
-            
+
             //error_log("Error=".implode(",", $query_device->errorInfo()));
         }
     }
-    
+
+
+    public function resetDevice($uuid)
+    {
+        error_log("Resetting device =".$uuid);
+        if ($this->databaseConnection()) {
+            // database query, getting all the info of the selected user
+            $query_device = $this->db_connection->prepare('update registry_port set uuid = NULL where uuid = :uuid');
+            $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $query_device->execute();
+            $query_device = $this->db_connection->prepare ( 'delete FROM device_cert WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            $query_device = $this->db_connection->prepare ( 'delete FROM stat WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            $query_device = $this->db_connection->prepare ( 'delete FROM motion_last WHERE uuid = :uuid' );
+            $query_device->bindValue ( ':uuid', $uuid, PDO::PARAM_STR );
+            $query_device->execute ();
+            $query_device = $this->db_connection->prepare('update device set type="RESET" WHERE uuid = :uuid');
+            $query_device->bindValue(':uuid', $uuid, PDO::PARAM_STR);
+            $query_device->execute();
+
+            error_log("Error=".implode(",", $query_device->errorInfo()));
+        }
+    }
+
 
     public function alert($state)
     {
@@ -113,7 +168,7 @@ class Device
             $query_device->bindValue(':state', $state, PDO::PARAM_INT);
             $query_device->bindValue(':uuid', $this->uuid, PDO::PARAM_STR);
             $query_device->execute();
-        } 
+        }
         return 1;
     }
 
@@ -133,7 +188,7 @@ class Device
         }
         return 1;
     }
-    
+
     public function isCapable($capability){
         if (strpos($this->capabilities, $capability) !== false){
             return True;
@@ -142,7 +197,7 @@ class Device
             return False;
         }
     }
-    
+
 
     public static function loadUserDevices($username)
     {
@@ -151,7 +206,7 @@ class Device
         try {
             $db_connection = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME . ';charset=utf8', DB_USER, DB_PASS);
             // database query, getting all the info of the selected user
-            $query_user = $db_connection->prepare('SELECT * FROM device WHERE user_name = :user_name order by updated desc');
+            $query_user = $db_connection->prepare('SELECT * FROM device WHERE user_name = :user_name and type="NORMAL" order by updated desc');
             $query_user->bindValue(':user_name', $username, PDO::PARAM_STR);
             $query_user->setFetchMode(PDO::FETCH_CLASS, 'Device');
             $query_user->execute();
@@ -164,7 +219,7 @@ class Device
         }
         return $devices;
     }
-    
+
 
     public static function loadAllDevices()
     {
@@ -185,7 +240,7 @@ class Device
         }
         return $devices;
     }
-    
+
     public static function getDeviceOwner($uuid){
         $db_connection = new PDO ( 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASS );
         // database query, getting all the info of the selected user
@@ -194,7 +249,7 @@ class Device
         $query_device->execute();
         return $query_device->fetch()[0];
     }
-    
+
     public static function getDeviceName($uuid){
         $db_connection = new PDO ( 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8', DB_USER, DB_PASS );
         // database query, getting all the info of the selected user

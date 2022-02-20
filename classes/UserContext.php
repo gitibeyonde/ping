@@ -130,7 +130,7 @@ class UserContext
         $devices = array();
         if ($this->databaseConnection()) {
             // database query, getting all the info of the selected user
-            $query_user = $this->db_connection->prepare('SELECT * FROM device WHERE user_name = :user_name order by updated desc');
+            $query_user = $this->db_connection->prepare('SELECT * FROM device WHERE user_name = :user_name and type="NORMAL" order by updated desc');
             $query_user->bindValue(':user_name', $this->user_name, PDO::PARAM_STR);
             $query_user->setFetchMode(PDO::FETCH_CLASS, 'Device'); 
             $query_user->execute();

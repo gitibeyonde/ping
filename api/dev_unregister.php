@@ -12,9 +12,9 @@ if (isset ( $_GET ['uuid'] )) {
     $uuid = $_GET ['uuid'];
     $user = urldecode($_POST ['u']);
     $pass = base64_decode ( urldecode($_POST['p'] ));
-    
+
     try {
-       $utils = new Utils(); 
+       $utils = new Utils();
        if ( !$utils->autheticate($user, $pass)){
            echo json_encode(array('errno' => 'sql_403', 'msg' => 'Bad password'));
        }
@@ -22,8 +22,8 @@ if (isset ( $_GET ['uuid'] )) {
            $aws = new Aws();
            $aws->deleteMotionData ( $uuid );
            $d = new Device();
-           $d->deleteDevice($uuid);
-           echo json_encode(array('success' => 'device un-registered'));
+           $d->resetDevice($uuid);
+           echo json_encode(array('success' => 'device resetted'));
        }
     }
     catch( Exception $e )
@@ -35,7 +35,7 @@ if (isset ( $_GET ['uuid'] )) {
 else {
     echo json_encode(array('errno' => 'param_100', 'msg' => 'Bad params'));
 }
-        
+
 
 ?>
 
