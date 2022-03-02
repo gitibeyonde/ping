@@ -30,8 +30,8 @@ function getSSLPage($url) {
     return $res;
 }
 
-		error_log(print_r($_POST, true));
-		error_log(print_r($_GET, true));
+error_log(print_r($_POST, true));
+error_log(print_r($_GET, true));
 if (!isset($_SERVER['PHP_AUTH_USER'])) {
     if (isset($_GET['view'])){
         switch ($_GET['view']) {
@@ -288,7 +288,8 @@ if (!isset($_SERVER['PHP_AUTH_USER'])) {
                         foreach ( $motions as $motion ) {
                             $furl = $client->getSignedFileUrl ( $motion->image );
                             $history[]=array('datetime'=>$motion->datetime, 'url'=> $furl);
-                            if ($i++ > 20)break;
+			    error_log("hist-".$motion->datetime);
+                            if (++$i > 50)break;
                         }
                         error_log("H Size=".count($history));
                         echo json_encode($history);

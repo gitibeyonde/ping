@@ -86,6 +86,15 @@ if (isset($_GET["hn"]) && isset($_GET["tz"]) && strlen(basename($_FILES["fileToU
         die();
     }
 
+    $filename = $_FILES['fileToUpload']['tmp_name'];
+    $size = getimagesize($filename);
+
+    if (getimagesize($_FILES['fileToUpload']['tmp_name']) == false){
+        echo json_encode(array('errno' => 'file_108', 'msg' => 'File is corrupt'));
+        error_log($uuid. 'File '.$_FILES["fileToUpload"]["name"] . ' corrupt ');
+        die();
+    }
+
     $motion = new MotionFile(basename($_FILES["fileToUpload"]["name"]));
     $target_file="";
 
